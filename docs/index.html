@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GATI - Graph Analytics for Throttling & Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a; 
+            --text-color: #f8fafc;
+            --card-bg: #1e293b;
+            --accent-color: #3b82f6;
+            --nav-bg: rgba(15, 23, 42, 0.9);
+        }
+        body.theme-cyber { --bg-color: #09090b; --text-color: #e4e4e7; --card-bg: #18181b; --accent-color: #22d3ee; --nav-bg: rgba(9, 9, 11, 0.9); }
+        body.theme-solar { --bg-color: #fdf6e3; --text-color: #657b83; --card-bg: #eee8d5; --accent-color: #b58900; --nav-bg: rgba(253, 246, 227, 0.9); }
+        body.theme-abyss { --bg-color: #000b18; --text-color: #e2e8f0; --card-bg: #001730; --accent-color: #c084fc; --nav-bg: rgba(0, 11, 24, 0.9); }
+        body { background-color: var(--bg-color); color: var(--text-color); transition: all 0.5s ease; font-family: system-ui, sans-serif; }
+      .nav-header { background-color: var(--nav-bg); backdrop-filter: blur(10px); }
+      .card { background-color: var(--card-bg); transition: transform 0.3s ease; }
+      .card:hover { transform: translateY(-2px); }
+      .text-accent { color: var(--accent-color); }
+      .bg-accent { background-color: var(--accent-color); color: #fff; }
+      .fade-in { animation: fadeIn 0.4s ease-in forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      .page-section { display: none; }
+      .page-section.active { display: block; }
+      .loader { border: 4px solid var(--card-bg); border-top: 4px solid var(--accent-color); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+    <header class="nav-header fixed w-full z-50 border-b border-opacity-20 border-gray-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="switchTab('home')">
+                    <span class="font-bold text-xl tracking-wider text-accent">GATI</span>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <button onclick="switchTab('home')" class="hover:text-accent font-medium">Home</button>
+                    <button onclick="switchTab('about')" class="hover:text-accent font-medium">About</button>
+                    <button onclick="switchTab('usage')" class="hover:text-accent font-medium">Usage</button>
+                    <button onclick="switchTab('themes')" class="hover:text-accent font-medium">Themes</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12 w-full">
+        <section id="home" class="page-section active fade-in">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-4">Machine-Speed Infrastructure <br><span class="text-accent">for AI-Speed Engineering</span></h1>
+                <p class="text-lg opacity-80">Paste your repository URL below to generate a predictive workflow twin.</p>
+            </div>
+            <div class="card rounded-xl p-6 shadow-2xl max-w-3xl mx-auto">
+                <form id="analyzer-form" class="flex flex-col gap-4" onsubmit="analyzeRepo(event)">
+                    <input type="url" placeholder="https://github.com/org/repo" required class="px-4 py-3 rounded-lg bg-black bg-opacity-20 border border-gray-400 focus:border-accent text-inherit">
+                    <button type="submit" class="bg-accent font-bold py-3 px-8 rounded-lg">Generate GATI</button>
+                </form>
+                <div id="output-area" class="mt-8 hidden">
+                    <div id="loading-spinner" class="py-8 text-center hidden"><div class="loader mb-4"></div><p>Parsing AST...</p></div>
+                    <div id="result-content" class="hidden fade-in">
+                        <div class="p-4 bg-green-500 bg-opacity-10 border border-green-500 rounded-lg mb-6">
+                            <h3 class="text-green-500 font-bold">Bottleneck Identified & Remedied</h3>
+                        </div>
+                        <pre class="bg-black bg-opacity-40 p-4 rounded-lg text-sm font-mono overflow-x-auto"><code>concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="page-section fade-in">
+            <h2 class="text-3xl font-bold mb-8 text-accent">About GATI</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="card p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-3 border-b border-opacity-20 pb-2">Introduction</h3>
+                    <p class="opacity-90">GATI limits GitHub Actions compute waste caused by AI agent overload by compressing workflow trajectories.</p>
+                </div>
+                <div class="card p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-3 border-b border-opacity-20 pb-2">Why Use GATI?</h3>
+                    <p class="opacity-90">Save 60%+ on Actions billing and throttle redundant AI commits instantly.</p>
+                </div>
+                <div class="card p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-3 border-b border-opacity-20 pb-2">Where to Use?</h3>
+                    <p class="opacity-90">High-velocity monorepos and teams utilizing AI coding tools.</p>
+                </div>
+                <div class="card p-6 rounded-xl">
+                    <h3 class="text-xl font-bold mb-3 border-b border-opacity-20 pb-2">What it does?!</h3>
+                    <p class="opacity-90">Parses code impact dynamically to generate minimal execution shards via JSON.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="usage" class="page-section fade-in">
+            <h2 class="text-3xl font-bold mb-8 text-accent">Usage</h2>
+            <div class="card p-8 rounded-xl opacity-90">
+                <p>1. Ensure your workflow triggers on <code>pull_request</code>.</p>
+                <p>2. Add the GATI composite action to dynamically build the JSON matrix.</p>
+                <p>3. Consume the matrix in testing via <code>${{ fromJSON(...) }}</code>.</p>
+            </div>
+        </section>
+
+        <section id="themes" class="page-section fade-in text-center">
+            <h2 class="text-3xl font-bold mb-6 text-accent">Themes</h2>
+            <div class="card p-10 rounded-xl max-w-md mx-auto">
+                <span id="current-theme-name" class="text-2xl font-bold text-accent block mb-6">Cyber Graph</span>
+                <button onclick="randomizeTheme()" class="bg-accent font-bold py-3 px-8 rounded-lg w-full">Shuffle Theme</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function switchTab(tabId) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        const themes =;
+
+        function applyTheme(t) {
+            document.body.className = 'antialiased min-h-screen flex flex-col ' + t.class;
+            document.getElementById('current-theme-name').innerText = t.name;
+        }
+
+        function randomizeTheme() {
+            const newTheme = themes[Math.floor(Math.random() * themes.length)];
+            applyTheme(newTheme);
+        }
+
+        window.addEventListener('DOMContentLoaded', randomizeTheme);
+
+        function analyzeRepo(e) {
+            e.preventDefault();
+            document.getElementById('output-area').classList.remove('hidden');
+            document.getElementById('loading-spinner').classList.remove('hidden');
+            document.getElementById('result-content').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('loading-spinner').classList.add('hidden');
+                document.getElementById('result-content').classList.remove('hidden');
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
