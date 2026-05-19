@@ -1,1 +1,29 @@
-
+name: 'GATI Router'
+description: 'Generates a dynamic testing matrix and throttles AI agents via AST parsing.'
+inputs:
+  github-token:
+    description: 'GitHub token for GraphQL telemetry'
+    required: true
+outputs:
+  matrix:
+    description: 'Compressed JSON matrix payload'
+    value: ${{ steps.analyze.outputs.matrix }}
+  should_skip:
+    description: 'Boolean flag to skip unneeded workflow runs'
+    value: ${{ steps.analyze.outputs.should_skip }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Install Dependencies
+      run: pip install -r ${{ github.action_path }}/requirements.txt
+      shell: bash
+    - name: Run GATI AST Analyzer
+      id: analyze
+      run: python ${{ github.action_path }}/src/ast_analyzer.py
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
