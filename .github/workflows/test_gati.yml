@@ -1,0 +1,39 @@
+name: GATI Predictive CI Orchestration
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gati-router:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      should_skip: ${{ steps.set-matrix.outputs.should_skip }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Execute GATI Graph Analytics
+        id: set-matrix
+        uses: ./ # Points to the action.yml in the root of the repository
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  dynamic-integration-tests:
+    needs: gati-router
+    if: needs.gati-router.outputs.should_skip != 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.gati-router.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Targeted Shard
+        run: echo "Running ${{ matrix.target }} on ${{ matrix.os }}"
